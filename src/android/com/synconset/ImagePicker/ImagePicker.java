@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import androidx.annotation.RequiresApi;
 
 public class ImagePicker extends CordovaPlugin {
 
@@ -31,7 +32,27 @@ public class ImagePicker extends CordovaPlugin {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
 
+    public static String[] storge_permissions = {
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+    };
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public static String[] storge_permissions_33 = {
+        Manifest.permission.READ_MEDIA_IMAGES,
+    };
+
     private CallbackContext callbackContext;
+
+    public static String[] permissions()
+    {
+        String[] p;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            p = storge_permissions_33;
+        } else {
+            p = storge_permissions;
+        }
+        return p;
+    }
 
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
         this.callbackContext = callbackContext;
@@ -105,7 +126,7 @@ public class ImagePicker extends CordovaPlugin {
     @SuppressLint("InlinedApi")
     private boolean hasReadPermission() {
         return Build.VERSION.SDK_INT < 23 ||
-            PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this.cordova.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
+            PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this.cordova.getActivity(),permissions()[0]);
     }
 
     @SuppressLint("InlinedApi")
@@ -113,7 +134,7 @@ public class ImagePicker extends CordovaPlugin {
         if (!hasReadPermission()) {
             ActivityCompat.requestPermissions(
                 this.cordova.getActivity(),
-                new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                permissions(),
                 PERMISSION_REQUEST_CODE);
         }
         // This method executes async and we seem to have no known way to receive the result
