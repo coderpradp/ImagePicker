@@ -31,6 +31,7 @@ public class ImagePicker extends CordovaPlugin {
     private static final String ACTION_REQUEST_READ_PERMISSION = "requestReadPermission";
 
     private static final int PERMISSION_REQUEST_CODE = 100;
+    private static final String PERMISSION_DENIED_ERROR = "Permission denied";
 
     public static String[] storge_permissions = {
         Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -133,14 +134,10 @@ public class ImagePicker extends CordovaPlugin {
     @SuppressLint("InlinedApi")
     private void requestReadPermission() {
         if (!hasReadPermission()) {
-            ActivityCompat.requestPermissions(
-                this.cordova.getActivity(),
-                permissions(),
-                PERMISSION_REQUEST_CODE);
+            cordova.requestPermissions(this, PERMISSION_REQUEST_CODE, permissions())
+        } else {
+            callbackContext.error("Permission denied");
         }
-        // This method executes async and we seem to have no known way to receive the result
-        // (that's why these methods were later added to Cordova), so simply returning ok now.
-        callbackContext.success();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -163,6 +160,22 @@ public class ImagePicker extends CordovaPlugin {
 
         } else {
             callbackContext.error("No images selected");
+        }
+    }
+
+    public void onRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) throws JSONException
+    {
+        for(int r:grantResults)
+        {
+            if(r == PackageManager.PERMISSION_DENIED)
+            {
+                callbackContext.error(PERMISSION_DENIED_ERROR);
+                return;
+            }
+        }
+        
+        if(resultCode == PERMISSION_REQUEST_CODE) {
+            callbackContext.success();
         }
     }
 
