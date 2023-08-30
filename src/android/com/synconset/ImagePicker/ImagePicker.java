@@ -18,7 +18,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-// import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 public class ImagePicker extends CordovaPlugin {
 
@@ -42,19 +42,18 @@ public class ImagePicker extends CordovaPlugin {
         Manifest.permission.READ_EXTERNAL_STORAGE,
     };
 
-    // @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    // public static String[] storge_permissions_33 = {
-    //     Manifest.permission.READ_MEDIA_IMAGES,
-    // };
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public static String[] storge_permissions_33 = {
+        Manifest.permission.READ_MEDIA_IMAGES,
+    };
 
     public static String[] permissions() {
         String[] p;
-        // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        //     p = storge_permissions_33;
-        // } else {
-        // p = storge_permissions;
-        // }
-        p = storge_permissions;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            p = storge_permissions_33;
+        } else {
+            p = storge_permissions;
+        }
         return p;
     }
 
